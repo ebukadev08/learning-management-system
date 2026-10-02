@@ -19,6 +19,7 @@ from app.routes import progress
 from app.routes import quizzes
 from app.routes import certificates
 from app.routes import reviews
+from app.routes import instructor
 
 
 # Creates all tables in MySQL if they don't already exist.
@@ -39,6 +40,7 @@ app.include_router(progress.router, prefix="/api", tags=["Progress"])
 app.include_router(quizzes.router, prefix="/api", tags=["Quizzes"])
 app.include_router(certificates.router, prefix="/api", tags=["Certificates"])
 app.include_router(reviews.router, prefix="/api", tags=["Reviews"])
+app.include_router(instructor.router, prefix="/api", tags=["Instructor Dashboard"])
 
 
 @app.get("/")
