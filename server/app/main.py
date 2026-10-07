@@ -10,6 +10,7 @@ this is the "free interactive API docs" FastAPI gives you.
 
 from fastapi import FastAPI
 from app.core.database import engine
+from fastapi.middleware.cors import CORSMiddleware
 from app.models import Base
 from app.routes import auth
 from app.routes import courses
@@ -30,6 +31,15 @@ app = FastAPI(
     title="Online Learning Platform API",
     description="Backend API for an LMS - courses, lessons, quizzes, progress tracking, certificates.",
     version="0.1.0",
+)
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 app.include_router(auth.router, prefix="/api/auth", tags=["Auth"])
