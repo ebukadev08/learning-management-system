@@ -125,7 +125,14 @@ def list_course_quizzes(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    _require_enrollment(course_id, current_user, db)
+    course = db.query(Course).filter(Course.id == course_id).first()
+    if not course:
+        raise HTTPException(status_code=404, detail="Course not found.")
+
+    is_owner = course.instructor_id == current_user.id or current_user.role.value == "admin"
+    if not is_owner:
+        _require_enrollment(course_id, current_user, db)
+
     return db.query(Quiz).filter(Quiz.course_id == course_id).all()
 
 @router.get("/quizzes/{quiz_id}", response_model=QuizWithQuestions)
@@ -138,7 +145,12 @@ def get_quiz_to_take(
     if not quiz:
         raise HTTPException(status_code=404, detail="Quiz not found.")
 
-    _require_enrollment(quiz.course_id, current_user, db)
+    course = db.query(Course).filter(Course.id == quiz.course_id).first()
+    is_owner = course.instructor_id == current_user.id or current_user.role.value == "admin"
+
+    if not is_owner:
+        _require_enrollment(quiz.course_id, current_user, db)
+
     return quiz
 
 @router.post("/quizzes/{quiz_id}/submit", response_model=QuizResultOut)
